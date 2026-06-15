@@ -26,7 +26,7 @@ Fetches recent articles from your [FreshRSS](https://freshrss.github.io/FreshRSS
 ### 📚 Kiwix — Offline Knowledge Base
 *(Coming soon)* Search your local [Kiwix](https://www.kiwix.org/) ZIM library (Wikipedia, Stack Exchange, etc.) and return relevant content as context.
 
-**File:** `kiwix_search.py`
+**File:** `kiwix_openwebui_tool.py`
 
 ---
 

@@ -24,9 +24,30 @@ Fetches recent articles from your [FreshRSS](https://freshrss.github.io/FreshRSS
 ---
 
 ### 📚 Kiwix — Offline Knowledge Base
-*(Coming soon)* Search your local [Kiwix](https://www.kiwix.org/) ZIM library (Wikipedia, Stack Exchange, etc.) and return relevant content as context.
+Search your local [Kiwix](https://www.kiwix.org/) ZIM library and return article content as context. Supports Wikipedia, Stack Exchange, iFixit, FreeCodeCamp, DevDocs, and more. Keyword routing automatically selects the most relevant ZIM for a given query, with Wikipedia as the default fallback.
 
-**File:** `kiwix_openwebui_tool.py`
+**File:** `kiwix_search.py`
+
+| Setting | Description | Default |
+|---------|-------------|---------|
+| `kiwix_url` | Base URL of your Kiwix instance | `http://kiwix:8080` |
+
+> **Note:** `kiwix_url` is hardcoded in `__init__` rather than a Valve. Edit it directly if your Kiwix container name or port differs. If Open WebUI and Kiwix share a Docker network, use the container name (e.g. `http://kiwix:8080`). Otherwise use the LAN IP and port (e.g. `http://192.168.3.5:8081`).
+
+**Exposes two callable functions:**
+
+- **`search_kiwix`** — returns a list of matching results with titles, excerpts, and URLs. Good for "what's available on X."
+- **`search_and_fetch`** — searches and pulls full article text from the top result. Good for "tell me about X."
+
+Both accept an `all_books` parameter — if `True`, the tool searches up to 5 of the most relevant ZIMs and deduplicates results.
+
+**Prerequisites:**
+- Kiwix running with at least one ZIM loaded
+- Kiwix container on the same Docker network as Open WebUI (e.g. `ai-net`)
+- Kiwix internal port is `8080` (mapped to whatever host port you prefer)
+
+**Keyword routing:**
+The tool scores ZIMs against the query using a keyword map and searches the highest-scoring book first. Unmatched queries fall back to Wikipedia. The keyword map covers: Raspberry Pi, ESP32, Arduino, Docker, nginx, bash, Python, machine learning, mathematics, retrocomputing, iFixit repairs, and more. Edit `keyword_mapping` in `__init__` to add your own ZIMs.
 
 ---
 
@@ -39,9 +60,9 @@ Fetches recent articles from your [FreshRSS](https://freshrss.github.io/FreshRSS
 
 ## Network Notes
 
-These tools are written assuming Open WebUI and your self-hosted services share a Docker network (e.g. `ai-net`). If that's the case, you can use container names as hostnames (`http://freshrss`, `http://kiwix`, etc.) instead of IP addresses.
+These tools are written assuming Open WebUI and your self-hosted services share a Docker network (e.g. `ai-net`). If that's the case, you can use container names as hostnames (`http://freshrss`, `http://kiwix:8080`, etc.) instead of IP addresses.
 
-If your services are on separate hosts, just set the Valve URL to the LAN IP and port instead.
+If your services are on separate hosts, just set the URL to the LAN IP and port instead.
 
 ## Philosophy
 
@@ -49,4 +70,4 @@ Local-first, privacy-preserving, subscription-free. These tools are designed for
 
 ## Contributing
 
-PRs welcome. If you've built a tool for another self-hosted service and want to add it here, open an issue or submit a pull request.
+PRs welcome. If you've built a tool for another self-hosted service and want to add it here, open an issue or submit a pull request. Combo detection left as an exercise for the reader.
